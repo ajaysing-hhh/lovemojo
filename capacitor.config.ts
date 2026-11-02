@@ -3,7 +3,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
 const config: CapacitorConfig = {
   appId: "com.lovemojo.app",
   appName: "LoveMojo",
-  webDir: ".",
+  webDir: "www",
   bundledWebRuntime: false,
 };
 
