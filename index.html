@@ -3,119 +3,67 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f6f1e9" />
-    <title>LoveMojo — your little corner of the world</title>
+    <meta name="theme-color" content="#09090b" />
+    <title>LoveMojo — our shared world</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Great+Vibes&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
     <link rel="manifest" href="manifest.webmanifest" />
   </head>
   <body>
+    <div class="color-wave" aria-hidden="true"></div>
+    <div class="neon-frame" aria-hidden="true"></div>
+    <div class="manwa-flyer" aria-hidden="true">Tere mera manwa kaise ek hoye re</div>
     <main class="app-shell">
-      <aside class="sidebar" aria-label="Primary navigation">
-        <div class="brand-lockup">
-          <div class="brand-mark" aria-hidden="true">LM</div>
-          <div>
-            <p class="brand-name">LoveMojo</p>
-            <p class="brand-caption">just us, always</p>
-          </div>
-        </div>
-
-        <nav class="nav-list">
-          <button class="nav-item active" data-view="today" type="button"><span class="nav-icon">✦</span> Today</button>
-          <button class="nav-item" data-view="chat" type="button"><span class="nav-icon">◌</span> Our chat <span class="unread-dot" aria-label="2 unread messages"></span></button>
-          <button class="nav-item" data-view="memories" type="button"><span class="nav-icon">⌁</span> Memories</button>
-          <button class="nav-item" data-view="ideas" type="button"><span class="nav-icon">＋</span> Ideas studio</button>
-          <button class="nav-item" data-view="invite" type="button"><span class="nav-icon">♡</span> Invite partner</button>
+      <aside class="sidebar">
+        <a class="brand" href="#" aria-label="LoveMojo home"><span>LM</span><strong>LoveMojo</strong><small>our shared world</small></a>
+        <nav class="tabs" aria-label="LoveMojo sections">
+          <button class="tab active" data-tab="memories" type="button"><b>01</b><span>Memories<br />Together</span></button>
+          <button class="tab" data-tab="lounge" type="button"><b>02</b><span>Spectator<br />Lounge</span></button>
+          <button class="tab feed-tab" data-tab="feed" type="button"><b>03</b><span>Mojo<br />Feed</span></button>
+          <button class="tab" data-tab="molo" type="button"><b>04</b><span>MOLO<br />Mojoloves</span></button>
+          <button class="tab" data-tab="profile" type="button"><b>05</b><span>Couple<br />Profile</span></button>
         </nav>
-
-        <div class="sidebar-bottom">
-          <div class="streak-note"><span class="tiny-spark">✦</span><div><strong>12 days</strong><span>of showing up</span></div></div>
-          <button class="profile-button" type="button"><span class="avatar mini-avatar">M</span><span>Mojo's space</span><span class="chevron">⌄</span></button>
-        </div>
+        <div class="presence-card"><span class="presence-dot"></span><span id="presence-copy">Waiting for your person</span></div>
+        <div class="sidebar-footer"><span>LOVE IS A<br />SHARED SIGNAL</span><span class="signal-line">♡ ━━━ ♡</span></div>
       </aside>
 
       <section class="content">
-        <header class="topbar">
-          <div class="date-block"><span class="status-pip"></span><span>Monday, November 2, 2026</span></div>
-          <div class="online-signal"><span class="neon-heart-line">♡━━━━━━━━♡</span><span class="flyer">tere mera manwa kayse ek hoye re</span></div>
-          <button class="icon-button notification-button" type="button" aria-label="Toggle notifications" aria-pressed="false">♧<span class="notification-badge"></span></button>
-        </header>
+        <header class="topbar"><div><span class="mono-kicker">LOVE / MOJO / 2026</span><span class="sync-state" id="sync-state">local preview</span></div><div class="top-actions"><button class="emoji-toggle" type="button" aria-label="Open reaction bar">♡</button><button class="icon-button notification-button" type="button" aria-label="Toggle notifications">♧</button></div></header>
+        <div class="reaction-bar" aria-label="Send a reaction"><button data-reaction="❤️" type="button">❤️</button><button data-reaction="✨" type="button">✨</button><button data-reaction="🥹" type="button">🥹</button><button data-reaction="☕" type="button">☕</button><button data-reaction="🎶" type="button">🎶</button></div>
 
-        <div class="view today-view" data-panel="today">
-          <section class="welcome-row">
-            <div>
-              <p class="eyebrow">A little hello from your corner</p>
-              <h1>Good morning,<br /><em>Mojo.</em></h1>
-            </div>
-            <div class="couple-avatars" aria-label="You and Alex"><span class="avatar avatar-mojo">M</span><span class="avatar avatar-alex">A</span><span class="heart-join">♥</span></div>
-          </section>
+        <section class="screen active" data-screen="memories">
+          <div class="screen-heading"><div><span class="mono-kicker crimson">01 / TOGETHER</span><h1>Memories<br /><em>together.</em></h1><p>Little evidence that your shared world is real.</p></div><button class="primary-button" data-open-memory type="button">＋ Add a memory</button></div>
+          <div class="memory-grid" id="memory-grid"><button class="memory-card memory-add" data-open-memory type="button"><span>＋</span><strong>Memory Together</strong><small>photos, notes, little dates</small></button><button class="memory-card sample-memory" data-open-memory type="button"><span class="memory-date">02 / 11 / 26</span><strong>coffee first,<br />big plans later?</strong><small>saved by Alex · 8:42 AM</small></button></div>
+        </section>
 
-          <section class="daily-card">
-            <div class="card-topline"><span class="section-label">THE DAILY MOJO</span><span class="mono-label">02 / 11 / 26</span></div>
-            <div class="daily-layout">
-              <div>
-                <h2>Small things,<br /><em>big feeling.</em></h2>
-                <p class="daily-copy">A five-minute walk together can turn an ordinary evening into one you remember. No destination required.</p>
-                <button class="text-action" type="button" data-toast="Saved for your next walk">Save this for later <span>↗</span></button>
-              </div>
-              <div class="orbit-art" aria-hidden="true"><div class="sun-disc"></div><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><span class="orbit-star star-one">✦</span><span class="orbit-star star-two">·</span></div>
-            </div>
-            <div class="card-footer"><span>Curated by Mojo</span><span>♡ 4 little hearts</span></div>
-          </section>
+        <section class="screen" data-screen="lounge">
+          <div class="screen-heading"><div><span class="mono-kicker crimson">02 / FRIENDS, AT THE EDGE</span><h1>Spectator<br /><em>lounge.</em></h1><p>Friends can add perspective without entering your main feed.</p></div><span class="spectator-badge">SPECTATORS ONLY</span></div>
+          <div class="lounge-grid"><div class="glass-panel"><span class="panel-label">RECOMMENDATION DROP</span><h2>Leave the lovers<br /><em>a good idea.</em></h2><form id="recommendation-form"><select id="recommendation-category"><option>Movie</option><option>Food</option><option>Travel</option><option>Business management</option><option>Expense split</option><option>Other</option></select><input id="recommendation-body" required placeholder="A film, place, system, or smart split..." /><button class="primary-button" type="submit">Send to lounge ↗</button></form></div><div class="glass-panel"><span class="panel-label">SHARED TOOLKIT</span><div class="tool-row"><strong>Money split</strong><button class="quiet-button" data-toast="Money split calculator is ready for the next update" type="button">Open ↗</button></div><div class="tool-row"><strong>Business / task board</strong><button class="quiet-button" data-toast="Task board is ready for the next update" type="button">Open ↗</button></div><div class="spectator-list" id="recommendation-list"><span>Waiting for recommendations from friends.</span></div></div></div>
+        </section>
 
-          <section class="conversation-section">
-            <div class="section-heading"><div><p class="eyebrow">In your little world</p><h2>Our chat</h2></div><button class="round-arrow" type="button" data-view-target="chat" aria-label="Open our chat">↗</button></div>
-            <div class="message-preview"><span class="avatar avatar-alex">A</span><div class="message-body"><div class="message-meta"><strong>Alex</strong><span>8:42 AM</span></div><p>“coffee first, big plans later?”</p></div><span class="message-unread">2</span></div>
-            <form class="quick-reply" id="quick-reply"><input aria-label="Quick reply" placeholder="Send a little love..." /><button type="submit" aria-label="Send message">↗</button></form>
-          </section>
-        </div>
+        <section class="screen" data-screen="feed">
+          <div class="feed-header"><div><span class="mono-kicker crimson">03 / THE SHARED SIGNAL</span><h1>Mojo <em>Feed.</em></h1></div><div class="feed-controls"><span id="unread-count">03 unread</span><button class="view-switch active" data-feed-view="compact" type="button">Compact</button><button class="view-switch" data-feed-view="cards" type="button">Cards</button><button class="view-switch" data-feed-view="magazine" type="button">Magazine</button></div></div>
+          <div class="interest-strip"><span>ALGO: COUPLE INTEREST × 3 + PARTNER MUSIC × 2 − AGE DECAY</span><button class="text-button" data-open-feed-editor type="button">＋ Prepare feed</button></div>
+          <div class="feed-list" id="feed-list"><article class="feed-item"><div class="feed-meta"><span>COUPLE INTEREST / 0.94</span><time>today</time></div><h2>Small things,<br /><em>big feeling.</em></h2><p>A five-minute walk together can turn an ordinary evening into one you remember. No destination required.</p><div class="feed-actions"><button class="text-button" data-open-comment type="button">♡ Comment</button><button class="text-button ask-spectators" type="button">Ask spectators</button></div></article><article class="feed-item"><div class="feed-meta"><span>PARTNER MUSIC / 0.81</span><time>yesterday</time></div><h2>A song for the<br /><em>long way home.</em></h2><p>Partner music recommendations are weighted into this private stream before anything else.</p><div class="feed-actions"><button class="text-button" data-open-comment type="button">♡ Comment</button><button class="text-button ask-spectators" type="button">Ask spectators</button></div></article></div>
+        </section>
 
-        <div class="view chat-view hidden" data-panel="chat">
-          <div class="section-heading chat-heading"><div><p class="eyebrow">Just the two of you</p><h1>Our chat</h1></div><span class="online-label"><span class="online-dot"></span> Alex is around</span></div>
-          <div class="chat-thread">
-            <div class="thread-date">TODAY</div>
-            <div class="bubble bubble-them"><span class="avatar avatar-alex">A</span><div><p>coffee first, big plans later?</p><time>8:42 AM</time></div></div>
-            <div class="bubble bubble-me"><div><p>Always. I found a tiny place near the park ☕</p><time>8:44 AM</time></div></div>
-            <div class="bubble bubble-them"><span class="avatar avatar-alex">A</span><div><p>that is extremely us. see you at 6?</p><time>8:45 AM</time></div></div>
-          </div>
-          <form class="chat-composer" id="chat-composer"><button type="button" class="composer-tool" aria-label="Add attachment">＋</button><input aria-label="Message Alex" placeholder="Write something sweet..." /><button type="submit" class="send-button" aria-label="Send message">↗</button></form>
-        </div>
+        <section class="screen" data-screen="molo">
+          <div class="molo-hero"><span class="mono-kicker crimson">04 / A PUBLIC LITTLE LOVE NOTE</span><h1>MOLO<br /><em>Mojoloves</em></h1><p>A daily pocket of love, wisdom, and music for any heart passing by.</p></div>
+          <div class="molo-grid"><article class="quote-card"><span class="panel-label">TODAY'S LOVE & WISDOM</span><blockquote>“Love is the bridge between two hearts, and every day is another step across.”</blockquote><small>Curated for LoveMojo · PAF Foundation / Isha Foundation</small></article><div class="playlist-card"><span class="panel-label">QUEUE SOMETHING FOR THEM</span><a href="https://open.spotify.com/" target="_blank" rel="noreferrer">Spotify playlist <span>↗</span></a><a href="https://music.youtube.com/" target="_blank" rel="noreferrer">YouTube Music <span>↗</span></a><form id="music-form"><input required placeholder="Song or artist for your person..." /><button class="send-button" type="submit">↗</button></form></div></div>
+        </section>
 
-        <div class="view memories-view hidden" data-panel="memories">
-          <div class="section-heading"><div><p class="eyebrow">The good stuff</p><h1>Memories</h1></div><button class="round-arrow" type="button" data-toast="Memory capture is coming next">＋</button></div>
-          <div class="memory-empty"><div class="memory-sun">✦</div><h2>Your little archive<br /><em>starts here.</em></h2><p>Save the tiny moments that make your shared world feel like home.</p><button class="primary-button" type="button" data-toast="Memory capture is coming next">Add your first memory <span>↗</span></button></div>
-        </div>
-
-        <div class="view ideas-view hidden" data-panel="ideas">
-          <div class="section-heading"><div><p class="eyebrow">Make the shared world richer</p><h1>Ideas <em>studio</em></h1></div></div>
-          <div class="ideas-intro"><p>Friends can leave suggestions. You and your partner decide what becomes part of your day.</p><span class="studio-status">Shared with both partners</span></div>
-          <div class="idea-grid">
-            <form class="idea-form" id="idea-form"><label for="idea-type">A little recommendation</label><select id="idea-type"><option>Food</option><option>Movie</option><option>Travel</option><option>Business</option><option>Money split</option><option>Other</option></select><input id="idea-input" placeholder="Try the ramen place on 5th..." required /><button class="primary-button" type="submit">Add suggestion <span>↗</span></button></form>
-            <div class="idea-list" id="idea-list"><article class="idea-item"><span class="idea-type">MOVIE</span><strong>Perfect Days</strong><small>Suggested by a friend · waiting for your yes</small><button type="button" class="idea-accept" data-toast="Added to your shared plans">Accept</button></article><article class="idea-item"><span class="idea-type">FOOD</span><strong>Sunday market walk</strong><small>Suggested by Alex · Saturday morning</small><button type="button" class="idea-accept" data-toast="Added to your shared plans">Accept</button></article></div>
-          </div>
-          <div class="studio-composer"><div><span class="section-label">YOUR PARTNER'S LANE</span><h2>Feed & music notes</h2></div><form id="studio-form"><input placeholder="A song, thought, or daily note for Alex..." required /><button class="send-button" type="submit" aria-label="Send studio note">↗</button></form></div>
-        </div>
-
-        <div class="view invite-view hidden" data-panel="invite">
-          <div class="invite-panel">
-            <span class="invite-mark">♡</span>
-            <p class="eyebrow">The color arrives together</p>
-            <h1>Make a little<br /><em>us.</em></h1>
-            <p class="invite-copy">Invite your person. LoveMojo stays quiet and black-and-white until they join your shared corner.</p>
-            <div class="invite-steps">
-              <form id="invite-form" class="invite-card"><label for="your-name">Your name</label><input id="your-name" placeholder="Mojo" required /><label for="partner-name">Their name</label><input id="partner-name" placeholder="Alex" required /><button class="primary-button" type="submit">Make our invite <span>↗</span></button></form>
-              <div class="code-card hidden" id="code-card"><span class="section-label">YOUR COUPLE PASSCODE</span><strong id="couple-code">MOJO + ALEX</strong><p>Share this inside the app. No links, no strangers.</p><button class="text-action" id="copy-code" type="button">Copy passcode <span>↗</span></button></div>
-              <form class="join-card" id="join-form"><label for="join-code">Partner's passcode</label><input id="join-code" placeholder="ALEX + MOJO" required /><button class="primary-button" type="submit">Join our corner <span>♡</span></button></form>
-            </div>
-          </div>
-        </div>
+        <section class="screen" data-screen="profile">
+          <div class="screen-heading"><div><span class="mono-kicker crimson">05 / YOUR PRIVATE SIGNAL</span><h1>Couple<br /><em>profile.</em></h1><p>Passcode, presence, and the interests that tune your shared feed.</p></div></div>
+          <div class="profile-grid"><div class="glass-panel invite-panel"><span class="panel-label">NAME-BLENDED INVITE</span><form id="invite-form"><input id="profile-name-a" placeholder="First name" required /><span class="joiner">＋</span><input id="profile-name-b" placeholder="Second name" required /><button class="primary-button" type="submit">Generate passcode ↗</button></form><output id="invite-output">Your passcode appears here.</output></div><div class="glass-panel"><span class="panel-label">COUPLE INTERESTS</span><div class="interest-tags"><button class="interest active" type="button">Food</button><button class="interest" type="button">Movies</button><button class="interest" type="button">Travel</button><button class="interest" type="button">Money</button><button class="interest" type="button">Music</button><button class="interest" type="button">Business</button></div><label class="range-label">How much should your feed surprise you? <input type="range" min="0" max="100" value="65" /></label></div></div>
+        </section>
       </section>
     </main>
+
+    <dialog class="memory-modal" id="memory-modal"><button class="modal-close" data-close-memory type="button" aria-label="Close">×</button><span class="mono-kicker crimson">MEMORY TOGETHER</span><h2>Keep this<br /><em>little moment.</em></h2><form id="memory-form"><label>Note <textarea id="memory-note" required placeholder="What should you both remember?"></textarea></label><label>Date <input id="memory-date" type="date" required /></label><button class="primary-button" type="submit">Save to both hearts ↗</button></form></dialog>
+    <dialog class="feed-modal" id="feed-modal"><button class="modal-close" data-close-feed type="button" aria-label="Close">×</button><span class="mono-kicker crimson">PREPARE THE FEED</span><h2>Make something<br /><em>for them.</em></h2><form id="feed-form"><input id="feed-title" required placeholder="Feed title" /><textarea id="feed-body" required placeholder="Write the note, story, or music thought..."></textarea><label class="check-row"><input id="shared-to-spectators" type="checkbox" /> Ask spectators for recommendations</label><button class="primary-button" type="submit">Publish to our feed ↗</button></form></dialog>
     <div class="toast" role="status" aria-live="polite"></div>
-    <script src="config.js" onerror="this.remove()"></script>
-    <script src="backend.js"></script>
-    <script src="script.js"></script>
+    <script src="config.js" onerror="this.remove()"></script><script src="backend.js"></script><script src="script.js"></script>
   </body>
 </html>

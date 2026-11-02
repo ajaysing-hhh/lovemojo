@@ -16,6 +16,8 @@ Open `index.html` in a browser, or run `npm run dev`.
 4. Add `<script src="config.js"></script>` and `<script src="backend.js"></script>` before `script.js` in `index.html`.
 5. Enable anonymous sign-in or email/password auth in Supabase Authentication.
 
+For the GitHub APK workflow, add repository secrets named `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `LOVEMOJO_COUPLE_ID`. The workflow injects them into the APK without committing them. The anon key is safe for browser use; never use a service-role key.
+
 Never put a Supabase service-role key in this app. The browser only receives the public anon key; row-level security protects couple data.
 
 ## Build an Android test APK

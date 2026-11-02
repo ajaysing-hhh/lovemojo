@@ -33,6 +33,10 @@ jobs:
         run: |
           mkdir -p www
           cp index.html styles.css script.js backend.js sw.js manifest.webmanifest config.example.js www/
+          if [ -n "${{ secrets.SUPABASE_URL }}" ] && [ -n "${{ secrets.SUPABASE_ANON_KEY }}" ]; then
+            printf 'window.LOVEMOJO_CONFIG = { supabaseUrl: "%s", supabaseAnonKey: "%s", coupleId: "%s" };' \
+              "${{ secrets.SUPABASE_URL }}" "${{ secrets.SUPABASE_ANON_KEY }}" "${{ secrets.LOVEMOJO_COUPLE_ID }}" > www/config.js
+          fi
 
       - name: Sync web app
         run: npx cap sync android

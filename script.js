@@ -1,129 +1,166 @@
-const panels = document.querySelectorAll("[data-panel]");
-const navItems = document.querySelectorAll("[data-view]");
+const provider = window.supabaseRealtimeProvider;
 const toast = document.querySelector(".toast");
 let toastTimer;
-const coupleState = JSON.parse(localStorage.getItem("lovemojo-couple") || '{"joined":false}');
+const state = JSON.parse(localStorage.getItem("lovemojo-state") || '{"joined":false,"role":"lover"}');
 
 function showToast(message) {
   toast.textContent = message;
   toast.classList.add("visible");
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove("visible"), 2600);
+  toastTimer = setTimeout(() => toast.classList.remove("visible"), 2800);
 }
 
-function switchView(view) {
-  panels.forEach((panel) => panel.classList.toggle("hidden", panel.dataset.panel !== view));
-  navItems.forEach((item) => item.classList.toggle("active", item.dataset.view === view));
-  window.scrollTo({ top: 0, behavior: "smooth" });
+function switchTab(tab) {
+  document.querySelectorAll(".tab").forEach((item) => item.classList.toggle("active", item.dataset.tab === tab));
+  document.querySelectorAll(".screen").forEach((screen) => screen.classList.toggle("active", screen.dataset.screen === tab));
 }
 
-function setJoined(joined) {
-  coupleState.joined = joined;
-  localStorage.setItem("lovemojo-couple", JSON.stringify(coupleState));
-  document.body.classList.toggle("prejoin", !joined);
-  document.querySelector(".online-signal").classList.toggle("visible", joined);
-  if (joined) {
-    showToast("Your shared corner is glowing");
-    switchView("today");
-  }
+function mergeNames(a, b) {
+  const first = a.trim().replace(/\s+/g, "").toLowerCase();
+  const second = b.trim().replace(/\s+/g, "").toLowerCase();
+  const blend = `${first.slice(0, Math.ceil(first.length / 2))}${second.slice(Math.floor(second.length / 2))}`;
+  return blend.toUpperCase();
 }
 
-navItems.forEach((item) => item.addEventListener("click", () => switchView(item.dataset.view)));
-document.querySelectorAll("[data-view-target]").forEach((item) => item.addEventListener("click", () => switchView(item.dataset.viewTarget)));
-document.querySelectorAll("[data-toast]").forEach((item) => item.addEventListener("click", () => showToast(item.dataset.toast)));
-document.querySelectorAll(".idea-accept").forEach((item) => item.addEventListener("click", () => showToast(item.dataset.toast)));
-
-document.querySelector("#invite-form").addEventListener("submit", (event) => {
-  event.preventDefault();
-  const first = document.querySelector("#your-name").value.trim();
-  const second = document.querySelector("#partner-name").value.trim();
-  if (!first || !second) return;
-  const code = [first, second].sort((a, b) => a.localeCompare(b)).map((name) => name.toUpperCase()).join(" + ");
-  document.querySelector("#couple-code").textContent = code;
-  document.querySelector("#code-card").classList.remove("hidden");
-  document.querySelector("#join-code").value = code;
-  showToast("Your private invite is ready");
-});
-
-document.querySelector("#join-form").addEventListener("submit", (event) => {
-  event.preventDefault();
-  if (document.querySelector("#join-code").value.trim().split("+").length !== 2) {
-    showToast("Use both names joined with +");
-    return;
-  }
-  setJoined(true);
-});
-
-document.querySelector("#copy-code").addEventListener("click", async () => {
-  const code = document.querySelector("#couple-code").textContent;
-  try { await navigator.clipboard.writeText(code); } catch { /* clipboard may be unavailable in the APK */ }
-  showToast("Passcode copied");
-});
-
-document.querySelector("#idea-form").addEventListener("submit", (event) => {
-  event.preventDefault();
-  const type = document.querySelector("#idea-type").value.toUpperCase();
-  const input = document.querySelector("#idea-input");
-  const item = document.createElement("article");
-  item.className = "idea-item";
-  item.innerHTML = `<span class="idea-type">${type}</span><strong></strong><small>Suggested by you · waiting for your partner</small>`;
-  item.querySelector("strong").textContent = input.value.trim();
-  document.querySelector("#idea-list").prepend(item);
-  input.value = "";
-  showToast("Suggestion shared with your partner");
-});
-
-document.querySelector("#studio-form").addEventListener("submit", (event) => {
-  event.preventDefault();
-  event.currentTarget.reset();
-  showToast("Feed and music note sent");
-});
-
-document.querySelector(".notification-button").addEventListener("click", (event) => {
-  const enabled = event.currentTarget.getAttribute("aria-pressed") !== "true";
-  event.currentTarget.setAttribute("aria-pressed", String(enabled));
-  document.querySelector(".notification-badge").style.display = enabled ? "none" : "block";
-  showToast(enabled ? "Daily love notes are on" : "Notifications paused");
-});
-
-async function addMessage(form) {
-  const input = form.querySelector("input");
-  const value = input.value.trim();
-  if (!value) {
-    showToast("Write a little something first");
-    input.focus();
-    return;
-  }
-  if (form.id === "quick-reply") {
-    if (typeof sendLiveMessage === "function" && hasSupabaseConfig()) await sendLiveMessage(value);
-    showToast("Reply sent to Alex");
-  } else {
-    if (typeof sendLiveMessage === "function" && hasSupabaseConfig()) {
-      await sendLiveMessage(value);
-      input.value = "";
-      showToast("Message sent");
-      return;
-    }
-    const bubble = document.createElement("div");
-    bubble.className = "bubble bubble-me";
-    bubble.innerHTML = `<div><p></p><time>now</time></div>`;
-    bubble.querySelector("p").textContent = value;
-    document.querySelector(".chat-thread").append(bubble);
-    showToast("Message sent");
-  }
-  input.value = "";
+function setOnline(online) {
+  document.body.classList.toggle("joined", online || state.joined);
+  document.querySelector(".presence-dot").classList.toggle("live", online);
+  document.querySelector("#presence-copy").textContent = online ? "Both lovers are online" : state.joined ? "Your person is away" : "Waiting for your person";
 }
 
-document.querySelectorAll("form").forEach((form) => form.addEventListener("submit", (event) => {
+function spawnReaction(emoji) {
+  const particle = document.createElement("span");
+  particle.className = "reaction-particle";
+  particle.textContent = emoji;
+  particle.style.left = `${20 + Math.random() * 60}%`;
+  particle.style.top = `${35 + Math.random() * 40}%`;
+  document.body.append(particle);
+  setTimeout(() => particle.remove(), 2200);
+}
+
+async function saveMemory(event) {
   event.preventDefault();
-  addMessage(form).catch((error) => showToast(error.message || "Message could not be sent"));
+  const payload = { note: document.querySelector("#memory-note").value.trim(), saved_for: document.querySelector("#memory-date").value };
+  try { await provider.insert("memories", payload); } catch (error) { showToast(error.message || "Memory could not sync"); return; }
+  document.querySelector("#memory-modal").close();
+  addMemoryCard(payload);
+  event.target.reset();
+  showToast("Saved to both hearts");
+}
+
+function addMemoryCard(memory) {
+  const card = document.createElement("button");
+  card.className = "memory-card sample-memory";
+  card.dataset.openMemory = "";
+  card.innerHTML = `<span class="memory-date"></span><strong></strong><small>saved to both hearts</small>`;
+  card.querySelector(".memory-date").textContent = memory.saved_for || "TODAY";
+  card.querySelector("strong").textContent = memory.note;
+  document.querySelector("#memory-grid").prepend(card);
+  card.addEventListener("click", openMemory);
+}
+
+function openMemory() {
+  const modal = document.querySelector("#memory-modal");
+  if (typeof modal.showModal === "function") modal.showModal();
+  else modal.setAttribute("open", "");
+}
+
+async function loadMemories() {
+  if (!provider.client) return;
+  try {
+    const memories = await provider.select("memories");
+    memories.forEach((memory) => addMemoryCard(memory));
+  } catch (error) { showToast(error.message || "Memories could not load"); }
+}
+
+async function loadFeed() {
+  if (!provider.client) return;
+  try {
+    const items = await provider.select("feed_items");
+    const list = document.querySelector("#feed-list");
+    items.reverse().forEach((item) => {
+      const article = document.createElement("article");
+      article.className = "feed-item";
+      article.innerHTML = `<div class="feed-meta"><span>LIVE / COUPLE SIGNAL</span><time></time></div><h2></h2><p></p><div class="feed-actions"><button class="text-button" data-open-comment type="button">♡ Comment</button><button class="text-button ask-spectators" type="button">Ask spectators</button></div>`;
+      article.querySelector("time").textContent = new Date(item.created_at).toLocaleDateString();
+      article.querySelector("h2").textContent = item.title;
+      article.querySelector("p").textContent = item.body;
+      list.prepend(article);
+    });
+  } catch (error) { showToast(error.message || "Feed could not load"); }
+}
+
+async function loadRecommendations() {
+  if (!provider.client) return;
+  try {
+    const items = await provider.select("spectator_recommendations");
+    const list = document.querySelector("#recommendation-list");
+    list.innerHTML = "";
+    items.forEach((item) => {
+      const row = document.createElement("div");
+      row.className = "tool-row";
+      row.innerHTML = `<strong></strong><small></small>`;
+      row.querySelector("strong").textContent = item.body;
+      row.querySelector("small").textContent = item.category;
+      list.append(row);
+    });
+  } catch (error) { showToast(error.message || "Recommendations could not load"); }
+}
+
+window.LoveMojo = { setOnline, spawnReaction, loadMemories, loadFeed, loadRecommendations };
+
+document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => switchTab(tab.dataset.tab)));
+document.querySelectorAll("[data-open-memory]").forEach((button) => button.addEventListener("click", openMemory));
+document.querySelector("[data-close-memory]").addEventListener("click", () => document.querySelector("#memory-modal").close());
+document.querySelector("#memory-form").addEventListener("submit", saveMemory);
+document.querySelector("[data-open-feed-editor]").addEventListener("click", () => document.querySelector("#feed-modal").showModal());
+document.querySelector("[data-close-feed]").addEventListener("click", () => document.querySelector("#feed-modal").close());
+document.querySelector("#feed-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const payload = { title: document.querySelector("#feed-title").value, body: document.querySelector("#feed-body").value, shared_to_spectators: document.querySelector("#shared-to-spectators").checked, score: 0 };
+  try { await provider.insert("feed_items", payload); } catch (error) { showToast(error.message || "Feed could not publish"); return; }
+  document.querySelector("#feed-modal").close();
+  showToast("Published to your private feed");
+  event.target.reset();
+});
+document.querySelector("#recommendation-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const payload = { category: document.querySelector("#recommendation-category").value.toLowerCase(), body: document.querySelector("#recommendation-body").value, shared_to_spectators: true };
+  try { await provider.insert("spectator_recommendations", payload); } catch (error) { showToast(error.message || "Suggestion could not sync"); return; }
+  event.target.reset();
+  showToast("Suggestion sent to the lounge");
+});
+document.querySelector("#music-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  try { await provider.insert("molo_content", { kind: "music", body: event.target.querySelector("input").value }); } catch (error) { showToast(error.message || "Music note could not sync"); return; }
+  event.target.reset();
+  showToast("Music note queued for your partner");
+});
+document.querySelector("#invite-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const code = mergeNames(document.querySelector("#profile-name-a").value, document.querySelector("#profile-name-b").value);
+  document.querySelector("#invite-output").textContent = `Passcode: ${code} · share inside LoveMojo`;
+  state.joined = true;
+  state.status = "active";
+  localStorage.setItem("lovemojo-state", JSON.stringify(state));
+  document.body.classList.remove("prejoin");
+  setOnline(false);
+  showToast("Your couple passcode is ready");
+});
+document.querySelectorAll(".interest").forEach((button) => button.addEventListener("click", () => button.classList.toggle("active")));
+document.querySelector(".emoji-toggle").addEventListener("click", () => document.querySelector(".reaction-bar").classList.toggle("open"));
+document.querySelectorAll("[data-reaction]").forEach((button) => button.addEventListener("click", async () => {
+  const emoji = button.dataset.reaction;
+  spawnReaction(emoji);
+  try { await provider.broadcastEmoji(emoji); } catch (error) { showToast(error.message || "Reaction could not sync"); }
 }));
+document.querySelector(".notification-button").addEventListener("click", () => showToast("Notifications are controlled by your device settings"));
+document.querySelectorAll("[data-toast]").forEach((item) => item.addEventListener("click", () => showToast(item.dataset.toast)));
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js").catch(() => {});
-}
-
-connectBackend().then(loadLiveData).catch(() => showToast("Live sync needs a valid Supabase setup"));
-document.body.classList.toggle("prejoin", !coupleState.joined);
-document.querySelector(".online-signal").classList.toggle("visible", coupleState.joined);
-if (!coupleState.joined) switchView("invite");
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(() => {});
+if (!state.joined) document.body.classList.add("prejoin");
+setOnline(false);
+provider.connect().then(async (connected) => {
+  document.querySelector("#sync-state").textContent = connected ? "supabase realtime" : "local preview";
+  if (connected) await Promise.all([loadMemories(), loadFeed(), loadRecommendations()]);
+}).catch((error) => showToast(error.message || "Supabase connection failed"));
