@@ -156,6 +156,71 @@ document.querySelector("#invite-form").addEventListener("submit", async (event) 
   showToast("Your couple passcode is ready");
 });
 document.querySelectorAll(".interest").forEach((button) => button.addEventListener("click", () => button.classList.toggle("active")));
+const dashCanvas = document.querySelector("#love-dash");
+const dashStart = document.querySelector("#game-start");
+if (dashCanvas && dashStart) {
+  const context = dashCanvas.getContext("2d");
+  let dashFrame;
+  let dashRunning = false;
+  let dashScore = 0;
+  let dashPlayer = { x: 34, y: 112, velocity: 0 };
+  let dashObstacle = { x: 510, width: 14 };
+  const jump = () => {
+    if (!dashRunning) return;
+    if (dashPlayer.y >= 112) dashPlayer.velocity = -8.8;
+  };
+  const drawDash = () => {
+    context.clearRect(0, 0, dashCanvas.width, dashCanvas.height);
+    context.strokeStyle = "#512530";
+    context.beginPath();
+    context.moveTo(0, 128);
+    context.lineTo(dashCanvas.width, 128);
+    context.stroke();
+    context.fillStyle = "#ff2400";
+    context.beginPath();
+    context.arc(dashPlayer.x, dashPlayer.y, 12, 0, Math.PI * 2);
+    context.fill();
+    context.fillStyle = "#dc143c";
+    context.fillRect(dashObstacle.x, 106, dashObstacle.width, 22);
+    context.fillStyle = "#e7a5a1";
+    context.font = "12px DM Mono";
+    context.fillText("jump the little heart", 14, 20);
+  };
+  const tickDash = () => {
+    if (!dashRunning) return;
+    dashPlayer.velocity += .45;
+    dashPlayer.y = Math.min(112, dashPlayer.y + dashPlayer.velocity);
+    dashObstacle.x -= 4.2 + Math.min(3, dashScore / 200);
+    if (dashObstacle.x < -dashObstacle.width) {
+      dashObstacle.x = dashCanvas.width + Math.random() * 120;
+      dashScore += 10;
+      document.querySelector("#game-score").textContent = dashScore;
+    }
+    if (dashObstacle.x < dashPlayer.x + 12 && dashObstacle.x + dashObstacle.width > dashPlayer.x - 12 && dashPlayer.y > 99) {
+      dashRunning = false;
+      dashStart.textContent = "Again · tap to jump";
+      showToast(`Love Dash score: ${dashScore}`);
+    }
+    drawDash();
+    dashFrame = requestAnimationFrame(tickDash);
+  };
+  const startDash = () => {
+    cancelAnimationFrame(dashFrame);
+    dashRunning = true;
+    dashScore = 0;
+    dashPlayer = { x: 34, y: 112, velocity: 0 };
+    dashObstacle = { x: 510, width: 14 };
+    document.querySelector("#game-score").textContent = "0";
+    dashStart.textContent = "Tap the game to jump";
+    tickDash();
+  };
+  dashStart.addEventListener("click", startDash);
+  dashCanvas.addEventListener("pointerdown", jump);
+  document.addEventListener("keydown", (event) => {
+    if (event.code === "Space") { event.preventDefault(); jump(); }
+  });
+  drawDash();
+}
 document.querySelector(".emoji-toggle").addEventListener("click", () => document.querySelector(".reaction-bar").classList.toggle("open"));
 document.querySelectorAll("[data-reaction]").forEach((button) => button.addEventListener("click", async () => {
   const emoji = button.dataset.reaction;
