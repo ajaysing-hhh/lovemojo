@@ -2,6 +2,8 @@
 
 Private couple chat and daily feed MVP.
 
+The current invite demo starts grayscale. Create a name-based passcode in **Invite partner**, enter it to join, and the shared space becomes colorful with the online neon heart line. The passcode is local in this demo; use the Supabase schema for production cross-device invites, memories, and recommendations.
+
 ## Run immediately
 
 Open `index.html` in a browser, or run `npm run dev`.

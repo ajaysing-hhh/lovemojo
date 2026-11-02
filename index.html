@@ -26,6 +26,8 @@
           <button class="nav-item active" data-view="today" type="button"><span class="nav-icon">✦</span> Today</button>
           <button class="nav-item" data-view="chat" type="button"><span class="nav-icon">◌</span> Our chat <span class="unread-dot" aria-label="2 unread messages"></span></button>
           <button class="nav-item" data-view="memories" type="button"><span class="nav-icon">⌁</span> Memories</button>
+          <button class="nav-item" data-view="ideas" type="button"><span class="nav-icon">＋</span> Ideas studio</button>
+          <button class="nav-item" data-view="invite" type="button"><span class="nav-icon">♡</span> Invite partner</button>
         </nav>
 
         <div class="sidebar-bottom">
@@ -37,6 +39,7 @@
       <section class="content">
         <header class="topbar">
           <div class="date-block"><span class="status-pip"></span><span>Monday, November 2, 2026</span></div>
+          <div class="online-signal"><span class="neon-heart-line">♡━━━━━━━━♡</span><span class="flyer">tere mera manwa kayse ek hoye re</span></div>
           <button class="icon-button notification-button" type="button" aria-label="Toggle notifications" aria-pressed="false">♧<span class="notification-badge"></span></button>
         </header>
 
@@ -83,6 +86,30 @@
         <div class="view memories-view hidden" data-panel="memories">
           <div class="section-heading"><div><p class="eyebrow">The good stuff</p><h1>Memories</h1></div><button class="round-arrow" type="button" data-toast="Memory capture is coming next">＋</button></div>
           <div class="memory-empty"><div class="memory-sun">✦</div><h2>Your little archive<br /><em>starts here.</em></h2><p>Save the tiny moments that make your shared world feel like home.</p><button class="primary-button" type="button" data-toast="Memory capture is coming next">Add your first memory <span>↗</span></button></div>
+        </div>
+
+        <div class="view ideas-view hidden" data-panel="ideas">
+          <div class="section-heading"><div><p class="eyebrow">Make the shared world richer</p><h1>Ideas <em>studio</em></h1></div></div>
+          <div class="ideas-intro"><p>Friends can leave suggestions. You and your partner decide what becomes part of your day.</p><span class="studio-status">Shared with both partners</span></div>
+          <div class="idea-grid">
+            <form class="idea-form" id="idea-form"><label for="idea-type">A little recommendation</label><select id="idea-type"><option>Food</option><option>Movie</option><option>Travel</option><option>Business</option><option>Money split</option><option>Other</option></select><input id="idea-input" placeholder="Try the ramen place on 5th..." required /><button class="primary-button" type="submit">Add suggestion <span>↗</span></button></form>
+            <div class="idea-list" id="idea-list"><article class="idea-item"><span class="idea-type">MOVIE</span><strong>Perfect Days</strong><small>Suggested by a friend · waiting for your yes</small><button type="button" class="idea-accept" data-toast="Added to your shared plans">Accept</button></article><article class="idea-item"><span class="idea-type">FOOD</span><strong>Sunday market walk</strong><small>Suggested by Alex · Saturday morning</small><button type="button" class="idea-accept" data-toast="Added to your shared plans">Accept</button></article></div>
+          </div>
+          <div class="studio-composer"><div><span class="section-label">YOUR PARTNER'S LANE</span><h2>Feed & music notes</h2></div><form id="studio-form"><input placeholder="A song, thought, or daily note for Alex..." required /><button class="send-button" type="submit" aria-label="Send studio note">↗</button></form></div>
+        </div>
+
+        <div class="view invite-view hidden" data-panel="invite">
+          <div class="invite-panel">
+            <span class="invite-mark">♡</span>
+            <p class="eyebrow">The color arrives together</p>
+            <h1>Make a little<br /><em>us.</em></h1>
+            <p class="invite-copy">Invite your person. LoveMojo stays quiet and black-and-white until they join your shared corner.</p>
+            <div class="invite-steps">
+              <form id="invite-form" class="invite-card"><label for="your-name">Your name</label><input id="your-name" placeholder="Mojo" required /><label for="partner-name">Their name</label><input id="partner-name" placeholder="Alex" required /><button class="primary-button" type="submit">Make our invite <span>↗</span></button></form>
+              <div class="code-card hidden" id="code-card"><span class="section-label">YOUR COUPLE PASSCODE</span><strong id="couple-code">MOJO + ALEX</strong><p>Share this inside the app. No links, no strangers.</p><button class="text-action" id="copy-code" type="button">Copy passcode <span>↗</span></button></div>
+              <form class="join-card" id="join-form"><label for="join-code">Partner's passcode</label><input id="join-code" placeholder="ALEX + MOJO" required /><button class="primary-button" type="submit">Join our corner <span>♡</span></button></form>
+            </div>
+          </div>
         </div>
       </section>
     </main>
