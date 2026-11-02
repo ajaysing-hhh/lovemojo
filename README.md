@@ -4,6 +4,10 @@ Private couple chat and daily feed MVP.
 
 The current invite demo starts grayscale. Create a name-based passcode in **Invite partner**, enter it to join, and the shared space becomes colorful with the online neon heart line. The passcode is local in this demo; use the Supabase schema for production cross-device invites, memories, and recommendations.
 
+## Community promise
+
+LoveMojo is invite-only. Couples keep a private shared world; approved friends join as spectators who can suggest food, films, travel, money ideas, and rituals. A suggestion becomes part of the couple's main feed only after a lover approves it. The product loop is intentionally small: **suggest → approve → do together → remember**. MOLO is the public-facing love and wisdom space.
+
 ## Run immediately
 
 Open `index.html` in a browser, or run `npm run dev`.

@@ -121,6 +121,48 @@ create table if not exists public.molo_content (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.community_posts (
+  id uuid primary key default gen_random_uuid(),
+  author_id uuid not null references auth.users(id) on delete cascade,
+  couple_id uuid references public.couples(id) on delete cascade,
+  kind text not null check (kind in ('suggestion', 'ritual', 'wisdom', 'announcement')),
+  category text,
+  body text not null check (char_length(body) between 1 and 2000),
+  status text not null default 'pending' check (status in ('pending', 'approved', 'hidden', 'rejected')),
+  approved_by uuid references auth.users(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.community_reports (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null references public.community_posts(id) on delete cascade,
+  reporter_id uuid not null references auth.users(id) on delete cascade,
+  reason text not null check (char_length(reason) between 1 and 500),
+  status text not null default 'open' check (status in ('open', 'reviewed', 'dismissed')),
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.community_admins (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+
+create or replace function public.auth_is_community_admin()
+returns boolean language sql stable security definer set search_path = public
+as $$ select exists (select 1 from public.community_admins where user_id = auth.uid()) $$;
+
+create or replace function public.approve_community_post(target_post_id uuid, target_couple_id uuid)
+returns void language plpgsql security definer set search_path = public
+as $$
+declare source public.community_posts;
+begin
+  if not public.auth_is_lover(target_couple_id) then raise exception 'Only a lover can approve into a couple space'; end if;
+  select * into source from public.community_posts where id = target_post_id and status = 'pending' for update;
+  if not found then raise exception 'Suggestion is unavailable'; end if;
+  update public.community_posts set status = 'approved', couple_id = target_couple_id, approved_by = auth.uid() where id = target_post_id;
+end;
+$$;
+
 create table if not exists public.game_sessions (
   id uuid primary key default gen_random_uuid(),
   couple_id uuid not null references public.couples(id) on delete cascade,
@@ -228,6 +270,9 @@ alter table public.scheduled_calls enable row level security;
 alter table public.food_snaps enable row level security;
 alter table public.molo_content enable row level security;
 alter table public.game_sessions enable row level security;
+alter table public.community_posts enable row level security;
+alter table public.community_reports enable row level security;
+alter table public.community_admins enable row level security;
 
 drop policy if exists "profiles self or household read" on public.profiles;
 drop policy if exists "profiles self write" on public.profiles;
@@ -248,6 +293,10 @@ drop policy if exists "calls lovers access" on public.scheduled_calls;
 drop policy if exists "food snaps lovers access" on public.food_snaps;
 drop policy if exists "molo public read" on public.molo_content;
 drop policy if exists "games lovers access" on public.game_sessions;
+drop policy if exists "community posts read" on public.community_posts;
+drop policy if exists "community posts create" on public.community_posts;
+drop policy if exists "community reports create" on public.community_reports;
+drop policy if exists "community admin posts" on public.community_posts;
 drop policy if exists "private couple media read" on storage.objects;
 drop policy if exists "private couple media upload" on storage.objects;
 
@@ -272,6 +321,15 @@ create policy "calls lovers access" on public.scheduled_calls for all using (pub
 create policy "food snaps lovers access" on public.food_snaps for all using (public.auth_is_lover(couple_id)) with check (public.auth_is_lover(couple_id));
 create policy "molo public read" on public.molo_content for select using (couple_id is null or public.auth_is_lover(couple_id));
 create policy "games lovers access" on public.game_sessions for select using (public.auth_is_lover(couple_id));
+create policy "community posts read" on public.community_posts for select using (
+  (status = 'approved' and (couple_id is null or public.auth_is_lover(couple_id) or public.auth_is_active_friend(couple_id)))
+  or author_id = auth.uid() or public.auth_is_community_admin()
+);
+create policy "community posts create" on public.community_posts for insert with check (
+  author_id = auth.uid() and (public.auth_is_active_friend(couple_id) or couple_id is null)
+);
+create policy "community reports create" on public.community_reports for insert with check (reporter_id = auth.uid());
+create policy "community admin posts" on public.community_posts for update using (public.auth_is_community_admin()) with check (public.auth_is_community_admin());
 
 insert into storage.buckets (id, name, public) values ('couple-media', 'couple-media', false)
 on conflict (id) do update set public = false;
@@ -289,5 +347,6 @@ do $$ begin
   alter publication supabase_realtime add table public.scheduled_calls;
   alter publication supabase_realtime add table public.food_snaps;
   alter publication supabase_realtime add table public.game_sessions;
+  alter publication supabase_realtime add table public.community_posts;
 exception when duplicate_object then null;
 end $$;

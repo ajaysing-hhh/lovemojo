@@ -46,6 +46,18 @@ No production copy, media, or brand assets supplied. The prototype uses clearly 
 - Make the daily check-in feel rewarding, not noisy.
 - Prefer one clear action over feature overload.
 - Add capabilities incrementally without losing emotional warmth.
+- Build an invite-only community where every contribution has a clear audience.
+- Keep friends as thoughtful spectators: they can suggest, react, and support, but lovers control what enters their private world.
+- Connect the loop: suggestion → lover review → shared ritual/feed item → memory.
+- Make moderation visible and human-led by the LoveMojo owner.
+
+## Community Model
+
+- Community access is invite-only.
+- Lovers own the private couple space and approve friend access.
+- Friends participate as spectators and contributors to suggestions, not as equal members of a couple space.
+- The LoveMojo owner can approve, hide, or remove community content and revoke access.
+- Public MOLO content is the only intentionally public surface.
 
 ## Accessibility & Inclusion
 

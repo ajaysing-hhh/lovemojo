@@ -14,6 +14,8 @@ test("schema contains the v5 security boundaries", () => {
     "storage.foldername(name)",
     "submit_game_move",
     "shared_to_friends",
+    "approve_community_post",
+    "community_admins",
   ]) assert.match(schema, new RegExp(fragment.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 });
 
