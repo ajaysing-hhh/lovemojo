@@ -156,6 +156,80 @@ document.querySelector("#invite-form").addEventListener("submit", async (event) 
   showToast("Your couple passcode is ready");
 });
 document.querySelectorAll(".interest").forEach((button) => button.addEventListener("click", () => button.classList.toggle("active")));
+const tttBoard = document.querySelector("#ttt-board");
+let tttState = Array(9).fill("");
+let tttTurn = "♥";
+function tttWinner() {
+  return [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]
+    .map((line) => tttState[line[0]] && tttState[line[0]] === tttState[line[1]] && tttState[line[1]] === tttState[line[2]] ? tttState[line[0]] : "").find(Boolean);
+}
+function renderTtt() {
+  tttBoard.innerHTML = "";
+  tttState.forEach((value, index) => {
+    const cell = document.createElement("button");
+    cell.className = "ttt-cell";
+    cell.type = "button";
+    cell.textContent = value;
+    cell.addEventListener("click", () => {
+      if (tttState[index] || tttWinner()) return;
+      tttState[index] = tttTurn;
+      tttTurn = tttTurn === "♥" ? "🐾" : "♥";
+      renderTtt();
+      if (tttWinner()) showToast(`${tttWinner()} wins the round`);
+      else if (tttState.every(Boolean)) showToast("Sweet draw — play again");
+    });
+    tttBoard.append(cell);
+  });
+  document.querySelector("#ttt-turn").textContent = tttWinner() ? "Round complete" : `Your turn · ${tttTurn === "♥" ? "Hearts" : "Cat Paws"}`;
+}
+document.querySelector("#ttt-reset").addEventListener("click", () => { tttState = Array(9).fill(""); tttTurn = "♥"; renderTtt(); });
+renderTtt();
+document.querySelectorAll(".game-choice").forEach((button) => button.addEventListener("click", () => {
+  document.querySelectorAll(".game-choice").forEach((item) => item.classList.toggle("active", item === button));
+  document.querySelectorAll(".game-stage").forEach((stage) => stage.classList.toggle("hidden", stage.dataset.gameStage !== button.dataset.game));
+}));
+const ludoTrack = document.querySelector("#ludo-track");
+let ludoPositions = [0, 0];
+function renderLudo() {
+  ludoTrack.innerHTML = "";
+  for (let index = 0; index < 20; index += 1) {
+    const cell = document.createElement("div");
+    cell.className = "ludo-cell";
+    if (ludoPositions[0] === index) cell.innerHTML += '<span class="ludo-token"></span>';
+    if (ludoPositions[1] === index) cell.innerHTML += '<span class="ludo-token blue"></span>';
+    ludoTrack.append(cell);
+  }
+}
+document.querySelector("#ludo-roll").addEventListener("click", () => {
+  const player = ludoPositions[0] <= ludoPositions[1] ? 0 : 1;
+  const roll = Math.floor(Math.random() * 6) + 1;
+  ludoPositions[player] = Math.min(19, ludoPositions[player] + roll);
+  renderLudo();
+  document.querySelector("#ludo-copy").textContent = `${player ? "Blue" : "Red"} rolled ${roll} · ${ludoPositions[player] >= 19 ? "wins!" : "next move"}`;
+  if (ludoPositions[player] >= 19) ludoPositions = [0, 0];
+});
+renderLudo();
+const chessPieces = ["♜","","","","♚","","","♜","","♟","♟","♟","♟","♟","♟","♟","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","♙","♙","♙","♙","♙","♙","♙","","♖","","","♔","","","♖"];
+let chessSelected = -1;
+function renderChess() {
+  const board = document.querySelector("#chess-board");
+  board.innerHTML = "";
+  chessPieces.forEach((piece, index) => {
+    const cell = document.createElement("button");
+    cell.className = `chess-cell${index === chessSelected ? " selected" : ""}`;
+    cell.type = "button";
+    cell.textContent = piece;
+    cell.addEventListener("click", () => {
+      if (chessSelected === -1 && piece) chessSelected = index;
+      else if (chessSelected !== -1) { chessPieces[index] = chessPieces[chessSelected]; chessPieces[chessSelected] = ""; chessSelected = -1; }
+      renderChess();
+    });
+    board.append(cell);
+  });
+}
+document.querySelector("#chess-reset").addEventListener("click", () => window.location.reload());
+renderChess();
+document.querySelectorAll("[data-jump-games]").forEach((button) => button.addEventListener("click", () => { switchTab("memories"); document.querySelector(".arcade-panel").scrollIntoView({ behavior: "smooth" }); }));
 const dashCanvas = document.querySelector("#love-dash");
 const dashStart = document.querySelector("#game-start");
 if (dashCanvas && dashStart) {
