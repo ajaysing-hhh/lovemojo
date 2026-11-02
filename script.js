@@ -3,6 +3,14 @@ const toast = document.querySelector(".toast");
 let toastTimer;
 const state = JSON.parse(localStorage.getItem("lovemojo-state") || '{"joined":false,"role":"lover"}');
 
+function unlockApp(role) {
+  state.authenticated = true;
+  state.role = role;
+  localStorage.setItem("lovemojo-state", JSON.stringify(state));
+  document.querySelector("#auth-gate").classList.add("hidden");
+  if (role === "friend") document.body.classList.add("friend-mode");
+}
+
 function showToast(message) {
   toast.textContent = message;
   toast.classList.add("visible");
@@ -156,10 +164,40 @@ document.querySelectorAll("[data-reaction]").forEach((button) => button.addEvent
 }));
 document.querySelector(".notification-button").addEventListener("click", () => showToast("Notifications are controlled by your device settings"));
 document.querySelectorAll("[data-toast]").forEach((item) => item.addEventListener("click", () => showToast(item.dataset.toast)));
+document.querySelector("#auth-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const name = document.querySelector("#auth-name").value.trim();
+  const phone = document.querySelector("#auth-phone").value.trim();
+  const password = document.querySelector("#auth-password").value;
+  const role = document.querySelector("input[name=role]:checked").value;
+  if (!/^\+[1-9]\d{7,14}$/.test(phone)) {
+    showToast("Use an E.164 phone number such as +919876543210");
+    return;
+  }
+  try {
+    if (provider.configured()) {
+      await provider.connect();
+      try { await provider.signInWithPhone(phone, password); }
+      catch { await provider.signUpWithPhone(phone, password, name, role); }
+    } else {
+      document.querySelector("#auth-status").textContent = "Local preview — add Supabase config for phone auth";
+    }
+    unlockApp(role);
+    showToast("Welcome to LoveMojo");
+  } catch (error) {
+    document.querySelector("#auth-status").textContent = error.message || "Authentication failed";
+  }
+});
+document.querySelector("#reset-password").addEventListener("click", async () => {
+  const phone = document.querySelector("#auth-phone").value.trim();
+  if (!phone) { showToast("Enter your phone number first"); return; }
+  try { await provider.resetPassword(phone); showToast("Recovery instructions sent"); } catch (error) { showToast(error.message || "Recovery is unavailable"); }
+});
 
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(() => {});
 if (!state.joined) document.body.classList.add("prejoin");
 setOnline(false);
+if (state.authenticated) unlockApp(state.role);
 provider.connect().then(async (connected) => {
   document.querySelector("#sync-state").textContent = connected ? "supabase realtime" : "local preview";
   if (connected) await Promise.all([loadMemories(), loadFeed(), loadRecommendations()]);

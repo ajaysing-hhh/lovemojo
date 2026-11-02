@@ -12,6 +12,23 @@
     <link rel="manifest" href="manifest.webmanifest" />
   </head>
   <body>
+    <section class="auth-gate" id="auth-gate">
+      <div class="auth-card">
+        <span class="brand-mark">LM</span>
+        <span class="mono-kicker crimson">PRIVATE SPACE FOR TWO</span>
+        <h1>Enter your<br /><em>shared world.</em></h1>
+        <p>Use your phone number to keep LoveMojo private. Friends enter through Vibe Crew.</p>
+        <form id="auth-form">
+          <input id="auth-name" placeholder="Display name" autocomplete="name" required />
+          <input id="auth-phone" type="tel" placeholder="+91 98765 43210" autocomplete="tel" pattern="^\+[1-9]\d{7,14}$" required />
+          <input id="auth-password" type="password" placeholder="Password" autocomplete="current-password" minlength="8" required />
+          <div class="role-picker"><label><input type="radio" name="role" value="lover" checked /> Enter as Lover</label><label><input type="radio" name="role" value="friend" /> Enter Friend's Space</label></div>
+          <button class="primary-button" type="submit">Continue privately ↗</button>
+        </form>
+        <button class="text-button" id="reset-password" type="button">Forgot password?</button>
+        <small id="auth-status">Supabase phone auth</small>
+      </div>
+    </section>
     <div class="color-wave" aria-hidden="true"></div>
     <div class="neon-frame" aria-hidden="true"></div>
     <div class="manwa-flyer" aria-hidden="true">Tere mera manwa kaise ek hoye re</div>

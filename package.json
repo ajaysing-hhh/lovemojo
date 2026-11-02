@@ -2,8 +2,10 @@
   "name": "lovemojo",
   "private": true,
   "version": "0.1.0",
+  "type": "module",
   "scripts": {
     "dev": "npx serve .",
+    "test": "node --test tests/rls_and_sync.test.js",
     "android:add": "npx cap add android",
     "android:sync": "npx cap sync android",
     "android:open": "npx cap open android"
