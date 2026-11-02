@@ -1,0 +1,10 @@
+{
+  "name": "LoveMojo",
+  "short_name": "LoveMojo",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f6f1e9",
+  "theme_color": "#f6f1e9",
+  "description": "A private little corner for two.",
+  "icons": []
+}

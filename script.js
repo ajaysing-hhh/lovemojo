@@ -27,7 +27,7 @@ document.querySelector(".notification-button").addEventListener("click", (event)
   showToast(enabled ? "Daily love notes are on" : "Notifications paused");
 });
 
-function addMessage(form) {
+async function addMessage(form) {
   const input = form.querySelector("input");
   const value = input.value.trim();
   if (!value) {
@@ -36,8 +36,15 @@ function addMessage(form) {
     return;
   }
   if (form.id === "quick-reply") {
+    if (typeof sendLiveMessage === "function" && hasSupabaseConfig()) await sendLiveMessage(value);
     showToast("Reply sent to Alex");
   } else {
+    if (typeof sendLiveMessage === "function" && hasSupabaseConfig()) {
+      await sendLiveMessage(value);
+      input.value = "";
+      showToast("Message sent");
+      return;
+    }
     const bubble = document.createElement("div");
     bubble.className = "bubble bubble-me";
     bubble.innerHTML = `<div><p></p><time>now</time></div>`;
@@ -50,5 +57,11 @@ function addMessage(form) {
 
 document.querySelectorAll("form").forEach((form) => form.addEventListener("submit", (event) => {
   event.preventDefault();
-  addMessage(form);
+  addMessage(form).catch((error) => showToast(error.message || "Message could not be sent"));
 }));
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js").catch(() => {});
+}
+
+connectBackend().then(loadLiveData).catch(() => showToast("Live sync needs a valid Supabase setup"));
